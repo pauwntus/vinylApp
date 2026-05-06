@@ -254,6 +254,133 @@ header {
 .album-wrap.pressing .vinyl-disc { right:-22px; }
 .album-wrap.pressing .album-name { color:var(--text); }
 
+/* ══ PLAYER ══ */
+.player-area { padding: 28px 20px 0; }
+
+.player-idle-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 52px 24px; gap: 18px;
+}
+.player-idle-ring {
+  width: 196px; height: 196px; border-radius: 50%;
+  border: 1.5px dashed rgba(255,255,255,.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.player-idle-icon { font-size: 52px; line-height: 1; opacity: .18; color: var(--text); }
+.player-idle-hint {
+  font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--text-dim); text-align: center; line-height: 1.8;
+}
+
+/* ── TURNTABLE ── */
+.turntable-scene { position: relative; width: 250px; height: 260px; margin: 0 auto; }
+.platter {
+  position: absolute; top: 5px; left: 0;
+  width: 250px; height: 250px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #252020, #141212);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 12px 48px rgba(0,0,0,.9),
+              inset 0 1px 0 rgba(255,255,255,.03);
+  overflow: hidden;
+}
+.platter::before {
+  content: ''; position: absolute; inset: 28px; border-radius: 50%;
+  background: repeating-radial-gradient(circle at 50% 50%,
+    transparent 0px, transparent 2.5px,
+    rgba(255,255,255,.013) 2.5px, rgba(255,255,255,.013) 3px);
+}
+.platter.spinning { animation: platter-spin 1.8s linear infinite; }
+@keyframes platter-spin { to { transform: rotate(360deg); } }
+
+.platter-label {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 90px; height: 90px; border-radius: 50%; overflow: hidden; z-index: 1;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 2px 10px rgba(0,0,0,.6);
+}
+.platter-label img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.platter-hole {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--bg); box-shadow: 0 0 0 1px rgba(255,255,255,.1); z-index: 2;
+}
+
+.tonearm {
+  position: absolute; top: 0; right: -8px;
+  width: 48px; height: 130px;
+  transform-origin: 28px 24px;
+  transform: rotate(-28deg);
+  transition: transform 1.4s cubic-bezier(.22,.68,.32,1.1);
+  pointer-events: none;
+}
+.tonearm.on-record { transform: rotate(10deg); }
+.tonearm-pivot {
+  position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+  width: 18px; height: 18px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #c8c4c0, #686460);
+  box-shadow: 0 1px 4px rgba(0,0,0,.7), 0 0 0 1px rgba(0,0,0,.4);
+}
+.tonearm-shaft {
+  position: absolute; top: 18px; left: 50%;
+  transform: translateX(-50%) rotate(-7deg); transform-origin: top center;
+  width: 3px; height: 92px;
+  background: linear-gradient(180deg, #b0a8a0, #6a6460); border-radius: 2px;
+}
+.tonearm-head {
+  position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+  width: 12px; height: 5px;
+  background: linear-gradient(90deg, #aaa09a, #706860); border-radius: 2px;
+}
+
+/* ── CASSETTE DECK ── */
+.deck-scene {
+  width: 100%; max-width: 300px; margin: 0 auto;
+  background: linear-gradient(160deg, #201d19, #121008);
+  border-radius: 8px; padding: 20px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 12px 40px rgba(0,0,0,.8),
+              inset 0 1px 0 rgba(255,255,255,.05);
+}
+.deck-bay {
+  background: #070503; border-radius: 4px; padding: 14px 12px;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,.9), inset 0 0 0 1px rgba(0,0,0,.4);
+  display: flex; align-items: center; justify-content: center; min-height: 64px;
+}
+.deck-loaded-cassette { width: 200px; height: 56px; border-radius: 4px; position: relative; }
+.deck-loaded-cassette .cassette-body { border-radius: 4px; width: 100%; height: 100%; }
+.deck-window-bar {
+  position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
+  width: 72px; height: 26px; background: rgba(0,0,0,.88); border-radius: 3px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.9);
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+}
+.deck-reel {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #666, #1a1a1a);
+  flex-shrink: 0; box-shadow: inset 0 1px 1px rgba(255,255,255,.1); position: relative;
+}
+.deck-reel::after {
+  content: ''; position: absolute; inset: 2px; border-radius: 50%;
+  border: 1.5px dashed rgba(255,255,255,.12);
+}
+.deck-reel.spinning { animation: reel-spin .65s linear infinite; }
+@keyframes reel-spin { to { transform: rotate(360deg); } }
+
+/* ── PLAYER INFO ── */
+.player-info { text-align: center; padding: 22px 20px 0; }
+.player-meta { font-size: 10px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; }
+.player-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); line-height: 1.2; margin-bottom: 4px; }
+.player-year { font-size: 10px; color: var(--text-dim); letter-spacing: .06em; }
+.player-actions { display: flex; gap: 10px; padding: 16px 20px 0; }
+.player-tracklist { padding-top: 4px; }
+
+/* ── DRAG ── */
+.drag-ghost {
+  position: fixed; pointer-events: none; z-index: 9000;
+  transform: scale(1.08) rotate(2deg);
+  filter: drop-shadow(0 12px 32px rgba(0,0,0,.85));
+}
+.drag-source { opacity: .25; transition: opacity .15s; }
+.tab.drop-ready { color: var(--text); }
+.tab.drop-hover { color: var(--accent) !important; border-bottom-color: var(--accent) !important; }
+
 /* ── HOVER (pointer devices only) ── */
 @media (hover: hover) {
   .tab:hover:not(.active) { color:var(--text); }
@@ -287,6 +414,7 @@ header {
   <div class="tabs">
     <div class="tab" id="tab-album" onclick="switchTab('album')">Album</div>
     <div class="tab active" id="tab-playlist" onclick="switchTab('playlist')">Spellistor</div>
+    <div class="tab" id="tab-player" onclick="switchTab('player')">Spela</div>
   </div>
 </header>
 
@@ -295,6 +423,44 @@ header {
 </div>
 <div class="panel" id="panel-album">
   <div class="album-grid" id="albumGrid"></div>
+</div>
+
+<div class="panel" id="panel-player">
+  <div class="player-area">
+
+    <div id="playerIdle" class="player-idle-wrap">
+      <div class="player-idle-ring"><div class="player-idle-icon">◎</div></div>
+      <div class="player-idle-hint">Dra ett album eller mixtape hit<br>för att ladda spelaren</div>
+    </div>
+
+    <div id="turntableScene" style="display:none">
+      <div class="turntable-scene">
+        <div class="platter" id="platter">
+          <div class="platter-label"><img id="platterArt" src="" alt=""></div>
+          <div class="platter-hole"></div>
+        </div>
+        <div class="tonearm" id="tonearm">
+          <div class="tonearm-pivot"></div>
+          <div class="tonearm-shaft"></div>
+          <div class="tonearm-head"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="deckScene" style="display:none">
+      <div class="deck-scene">
+        <div class="deck-bay" id="deckBay"></div>
+      </div>
+    </div>
+
+    <div id="playerInfo" class="player-info" style="display:none"></div>
+    <div class="player-actions" id="playerActions" style="display:none">
+      <button class="play-btn">▶ Spela</button>
+      <button class="shuffle-btn">⇄ Blanda</button>
+    </div>
+    <div id="playerTracklist" class="player-tracklist"></div>
+
+  </div>
 </div>
 
 <!-- ALBUM OVERLAY -->
@@ -394,19 +560,101 @@ function renderLabel(name) {
   return `<div class="${cls}">${display}</div>`;
 }
 
-/* ── PRESS HANDLER ── */
-function addPressHandlers(el) {
-  let startY = 0;
+/* ── DRAG STATE ── */
+let dragState = null;
+
+function startDrag(sourceEl, type, data, x, y) {
+  const rect = sourceEl.getBoundingClientRect();
+  const ghost = sourceEl.cloneNode(true);
+  ghost.className = sourceEl.className + ' drag-ghost';
+  ghost.style.width  = rect.width  + 'px';
+  ghost.style.left   = rect.left   + 'px';
+  ghost.style.top    = rect.top    + 'px';
+  ghost.style.margin = '0';
+  document.body.appendChild(ghost);
+  sourceEl.classList.add('drag-source');
+  dragState = { type, data, ghost, sourceEl, ox: x - rect.left, oy: y - rect.top };
+  document.getElementById('tab-player').classList.add('drop-ready');
+}
+
+function moveDrag(x, y) {
+  if (!dragState) return;
+  const { ghost, ox, oy } = dragState;
+  ghost.style.left = (x - ox) + 'px';
+  ghost.style.top  = (y - oy) + 'px';
+  const tr = document.getElementById('tab-player').getBoundingClientRect();
+  const over = x >= tr.left - 20 && x <= tr.right + 20 && y >= tr.top - 20 && y <= tr.bottom + 40;
+  document.getElementById('tab-player').classList.toggle('drop-hover', over);
+}
+
+function endDrag(x, y) {
+  if (!dragState) return;
+  const { ghost, type, data, sourceEl } = dragState;
+  const tr = document.getElementById('tab-player').getBoundingClientRect();
+  const dropped = x >= tr.left - 28 && x <= tr.right + 28 && y >= tr.top - 28 && y <= tr.bottom + 48;
+  document.getElementById('tab-player').classList.remove('drop-ready', 'drop-hover');
+  sourceEl.classList.remove('drag-source');
+
+  if (dropped) {
+    ghost.style.transition = 'all .32s cubic-bezier(.4,0,.2,1)';
+    ghost.style.transform  = 'scale(0.25) rotate(10deg)';
+    ghost.style.opacity    = '0';
+    ghost.style.left       = (tr.left + tr.width / 2 - 40) + 'px';
+    ghost.style.top        = tr.top + 'px';
+    setTimeout(() => ghost.remove(), 340);
+    loadIntoPlayer(type, data);
+    switchTab('player');
+  } else {
+    ghost.style.transition = 'opacity .18s, transform .18s';
+    ghost.style.opacity    = '0';
+    ghost.style.transform  = 'scale(0.9) rotate(0deg)';
+    setTimeout(() => ghost.remove(), 200);
+  }
+  dragState = null;
+}
+
+/* ── GRID ITEM INTERACTION (tap + drag) ── */
+function setupGridItem(el, type, data, onTap) {
+  let pressing = false, dragging = false, startX, startY;
+
   el.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
+    pressing = true; dragging = false;
     el.classList.add('pressing');
   }, { passive: true });
+
+  el.addEventListener('touchmove', e => {
+    if (!pressing) return;
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if (!dragging && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+      dragging = true;
+      startDrag(el, type, data, startX, startY);
+    }
+    if (dragging) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+
   el.addEventListener('touchend', e => {
     el.classList.remove('pressing');
+    pressing = false;
+    if (dragging) {
+      e.preventDefault();
+      endDrag(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      dragging = false;
+      return;
+    }
+    e.preventDefault();
+    onTap();
   });
+
   el.addEventListener('touchcancel', () => {
     el.classList.remove('pressing');
+    pressing = false;
+    if (dragging) { endDrag(-9999, -9999); dragging = false; }
   });
+
+  el.addEventListener('click', onTap);
 }
 
 /* ── DATA ── */
@@ -510,8 +758,7 @@ function renderCassetteGrid(arr) {
       </div>
       <div class="case-name">${truncate(p.name, 16)}</div>
     `;
-    addPressHandlers(wrap);
-    wrap.addEventListener('click', () => openCassette(p));
+    setupGridItem(wrap, 'playlist', p, () => openCassette(p));
     cassetteGrid.appendChild(wrap);
   });
 }
@@ -535,8 +782,7 @@ function renderAlbumGrid(arr) {
       <div class="album-name">${truncate(a.title,14)}</div>
       <div class="album-artist">${truncate(a.artist,14)}</div>
     `;
-    addPressHandlers(wrap);
-    wrap.addEventListener('click', () => openAlbum(a));
+    setupGridItem(wrap, 'album', a, () => openAlbum(a));
     albumGrid.appendChild(wrap);
 
     const img = wrap.querySelector('img');
@@ -667,6 +913,144 @@ function renderCassetteTracks(tracks, playlistName) {
   });
 }
 
+/* ── PLAYER ── */
+let playerLoaded = null;
+
+function loadIntoPlayer(type, data) {
+  playerLoaded = { type, data };
+  renderPlayer();
+}
+
+function renderPlayer() {
+  if (!playerLoaded) return;
+  const { type, data } = playerLoaded;
+
+  const idleEl    = document.getElementById('playerIdle');
+  const ttEl      = document.getElementById('turntableScene');
+  const deckEl    = document.getElementById('deckScene');
+  const infoEl    = document.getElementById('playerInfo');
+  const actionsEl = document.getElementById('playerActions');
+  const tlEl      = document.getElementById('playerTracklist');
+
+  idleEl.style.display = 'none';
+  ttEl.style.display   = 'none';
+  deckEl.style.display = 'none';
+  infoEl.style.display = '';
+  actionsEl.style.display = '';
+  tlEl.innerHTML = '';
+
+  if (type === 'album') {
+    ttEl.style.display = '';
+    document.getElementById('platterArt').src = data.artUrl || '';
+
+    const tonearm = document.getElementById('tonearm');
+    const platter = document.getElementById('platter');
+    tonearm.classList.remove('on-record');
+    platter.classList.remove('spinning');
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        tonearm.classList.add('on-record');
+        setTimeout(() => platter.classList.add('spinning'), 900);
+      }, 350);
+    });
+
+    infoEl.innerHTML = `
+      <div class="player-meta">${data.artist}</div>
+      <div class="player-title">${data.title}</div>
+      <div class="player-year">${data.year} · ${data.tracks.length} låtar</div>
+    `;
+
+    data.tracks.forEach((t, i) => {
+      const row = document.createElement('div');
+      row.className = 'track-row';
+      row.innerHTML = `<span class="track-num">${String(i+1).padStart(2,'0')}</span><span class="track-name">${t}</span><span class="track-dur">—</span>`;
+      tlEl.appendChild(row);
+    });
+
+  } else {
+    deckEl.style.display = '';
+    const bay = document.getElementById('deckBay');
+    bay.innerHTML = `
+      <div class="deck-loaded-cassette cassette--${data.color}">
+        <div class="cassette-body">
+          <div class="deck-window-bar">
+            <div class="deck-reel spinning"></div>
+            <div class="deck-reel spinning"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    const cassette = bay.querySelector('.deck-loaded-cassette');
+    cassette.style.transform = 'translateY(-14px)';
+    cassette.style.opacity = '0';
+    requestAnimationFrame(() => {
+      cassette.style.transition = 'transform .55s cubic-bezier(.34,1.2,.64,1), opacity .3s';
+      cassette.style.transform  = '';
+      cassette.style.opacity    = '1';
+    });
+
+    infoEl.innerHTML = `
+      <div class="player-title">${data.name}</div>
+      <div class="player-year">${data.tracks.length} låtar</div>
+    `;
+
+    const half  = Math.ceil(data.tracks.length / 2);
+    const sides = [
+      { label: 'Sida A', tracks: data.tracks.slice(0, half) },
+      { label: 'Sida B', tracks: data.tracks.slice(half) },
+    ];
+
+    const sideTabsEl = document.createElement('div');
+    sideTabsEl.className = 'tape-sides';
+    sideTabsEl.innerHTML = sides.map((s, i) =>
+      `<div class="tape-side-tab ${i===0?'active':''}" data-side="${i}">${s.label} · ${s.tracks.length} låtar</div>`
+    ).join('');
+    tlEl.appendChild(sideTabsEl);
+
+    const trackContentEl = document.createElement('div');
+    trackContentEl.className = 'cassette-tracklist';
+    tlEl.appendChild(trackContentEl);
+
+    function renderSide(idx) {
+      trackContentEl.innerHTML = '';
+      sides[idx].tracks.forEach((t, i) => {
+        const row = document.createElement('div');
+        row.className = 'cassette-track-row';
+        row.innerHTML = `
+          <span class="cassette-track-num">${String(i+1).padStart(2,'0')}</span>
+          <div class="cassette-track-art skeleton"></div>
+          <div class="cassette-track-info">
+            <div class="cassette-track-name">${t}</div>
+            <div class="cassette-track-artist">—</div>
+          </div>
+          <span class="cassette-track-dur">—</span>`;
+        trackContentEl.appendChild(row);
+        fetchArt(t, 'song').then(url => {
+          if (!url) return;
+          const art = row.querySelector('.cassette-track-art');
+          art.classList.remove('skeleton');
+          art.innerHTML = `<img src="${url}" alt="${t}">`;
+          fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(t)}&media=music&entity=song&limit=1`)
+            .then(r => r.json()).then(d => {
+              const el = row.querySelector('.cassette-track-artist');
+              if (d.results[0]?.artistName) el.textContent = d.results[0].artistName;
+            }).catch(() => {});
+        });
+      });
+    }
+
+    sideTabsEl.querySelectorAll('.tape-side-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        sideTabsEl.querySelectorAll('.tape-side-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderSide(parseInt(tab.dataset.side));
+      });
+    });
+    renderSide(0);
+  }
+}
+
 /* ── OVERLAY HELPERS ── */
 function openOverlay(id) {
   const el = document.getElementById(id);
@@ -706,9 +1090,20 @@ function switchTab(tab) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('panel-'+tab).classList.add('active');
-  document.getElementById('itemCount').textContent = tab==='playlist'
-    ? playlists.length+' spellistor' : albums.length+' album';
-  updateSortBtn();
+  const countEl  = document.getElementById('itemCount');
+  const sortBtn  = document.getElementById('sortBtn');
+  if (tab === 'playlist') {
+    countEl.textContent   = playlists.length + ' spellistor';
+    sortBtn.style.display = '';
+    updateSortBtn();
+  } else if (tab === 'album') {
+    countEl.textContent   = albums.length + ' album';
+    sortBtn.style.display = '';
+    updateSortBtn();
+  } else {
+    countEl.textContent   = playerLoaded ? (playerLoaded.type === 'album' ? playerLoaded.data.title : playerLoaded.data.name) : '';
+    sortBtn.style.display = 'none';
+  }
 }
 
 renderCassetteGrid(playlistsAlpha);
