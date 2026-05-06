@@ -11,7 +11,7 @@
   --bg: #0e0c09;
   --surface: #161410;
   --text: #e8ddd0;
-  --text-dim: #5a4e40;
+  --text-dim: #7d7168;
   --accent: #c8a97e;
   --border: rgba(255,255,255,0.05);
 }
@@ -35,7 +35,10 @@ header {
 }
 .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--accent); letter-spacing: .04em; font-style: italic; }
+.header-right { display: flex; align-items: center; gap: 12px; }
 .item-count { font-size: 9px; letter-spacing: .18em; color: var(--text-dim); text-transform: uppercase; }
+.sort-btn { background: none; border: 1px solid var(--border); color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px; border-radius: 2px; cursor: pointer; transition: color .2s, border-color .2s; touch-action: manipulation; -webkit-tap-highlight-color: transparent; line-height: 1; }
+.sort-btn.is-shuffle { color: var(--accent); border-color: rgba(200,169,126,.3); }
 .tabs { display: flex; }
 .tab { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); cursor: pointer; padding: 10px 0; margin-right: 28px; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -114,7 +117,7 @@ header {
 .label-white::after  { background:radial-gradient(circle,#d5d8dc,#aab7b8); }
 .label-cream::after  { background:radial-gradient(circle,#d4c8a8,#b8aa88); }
 .album-name { font-size:9px; letter-spacing:.06em; color:var(--text-dim); text-align:center; text-transform:uppercase; max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .2s; }
-.album-artist { font-size:8px; color:var(--text-dim); text-align:center; opacity:.55; max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:-4px; }
+.album-artist { font-size:8px; color:var(--text-dim); text-align:center; opacity:.75; max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:-4px; }
 
 .skeleton { background:linear-gradient(90deg,#1a1810 25%,#242018 50%,#1a1810 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -156,10 +159,10 @@ header {
 .tracklist { padding:8px 20px 0; }
 .track-row { display:flex; align-items:center; gap:14px; padding:11px 6px; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer; transition:background .15s; border-radius:6px; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .track-row:active { background:rgba(255,255,255,.03); }
-.track-num { width:20px; text-align:right; font-size:10px; color:var(--text-dim); opacity:.45; flex-shrink:0; }
+.track-num { width:20px; text-align:right; font-size:10px; color:var(--text-dim); opacity:.65; flex-shrink:0; }
 .track-name { flex:1; font-size:12px; color:var(--text-dim); transition:color .15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .track-row:active .track-name { color:var(--text); }
-.track-dur { font-size:10px; color:var(--text-dim); opacity:.4; flex-shrink:0; }
+.track-dur { font-size:10px; color:var(--text-dim); opacity:.6; flex-shrink:0; }
 
 .action-row { display:flex; gap:10px; padding:20px 20px 0; }
 .play-btn { display:flex; align-items:center; gap:8px; background:none; border:1px solid rgba(200,169,126,.25); color:var(--accent); padding:10px 20px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; border-radius:2px; transition:all .2s; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
@@ -232,14 +235,14 @@ header {
 .cassette-tracklist { padding:4px 16px 0; }
 .cassette-track-row { display:flex; align-items:center; gap:12px; padding:10px 6px; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer; border-radius:6px; transition:background .15s; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .cassette-track-row:active { background:rgba(255,255,255,.03); }
-.cassette-track-num { width:18px; text-align:right; font-size:10px; color:var(--text-dim); opacity:.4; flex-shrink:0; }
+.cassette-track-num { width:18px; text-align:right; font-size:10px; color:var(--text-dim); opacity:.6; flex-shrink:0; }
 .cassette-track-art { width:36px; height:36px; border-radius:3px; overflow:hidden; flex-shrink:0; background:#1a1a1a; }
 .cassette-track-art img { width:100%; height:100%; object-fit:cover; display:block; }
 .cassette-track-info { flex:1; min-width:0; }
 .cassette-track-name { font-size:11px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .15s; }
 .cassette-track-row:active .cassette-track-name { color:var(--text); }
-.cassette-track-artist { font-size:9px; color:var(--text-dim); opacity:.45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
-.cassette-track-dur { font-size:10px; color:var(--text-dim); opacity:.35; flex-shrink:0; }
+.cassette-track-artist { font-size:9px; color:var(--text-dim); opacity:.65; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+.cassette-track-dur { font-size:10px; color:var(--text-dim); opacity:.55; flex-shrink:0; }
 
 .close-pill { position:absolute; top:16px; right:20px; z-index:10; background:rgba(255,255,255,.07); border:none; color:var(--text-dim); width:44px; height:44px; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; transition:all .2s; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
 .close-pill:active { background:rgba(255,255,255,.12); color:var(--text); }
@@ -266,6 +269,8 @@ header {
   .play-btn:hover { background:rgba(200,169,126,.08); border-color:var(--accent); }
   .shuffle-btn:hover { border-color:rgba(255,255,255,.2); color:var(--text); }
   .close-pill:hover { background:rgba(255,255,255,.12); color:var(--text); }
+  .sort-btn:hover { color:var(--text); border-color:rgba(255,255,255,.15); }
+  .sort-btn.is-shuffle:hover { color:var(--accent); border-color:rgba(200,169,126,.5); }
 }
 </style>
 </head>
@@ -274,7 +279,10 @@ header {
 <header>
   <div class="header-top">
     <div class="logo">Vinyl</div>
-    <div class="item-count" id="itemCount"></div>
+    <div class="header-right">
+      <div class="item-count" id="itemCount"></div>
+      <button class="sort-btn" id="sortBtn" onclick="toggleSort()">A–Z</button>
+    </div>
   </div>
   <div class="tabs">
     <div class="tab" id="tab-album" onclick="switchTab('album')">Album</div>
@@ -440,60 +448,113 @@ async function fetchArt(query, entity='album') {
   } catch { return ''; }
 }
 
+/* ── SORT STATE ── */
+let currentTab = 'playlist';
+const sortModes = { album: 'alpha', playlist: 'alpha' };
+
+function fisherYates(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+playlists.forEach(p => { p.color = p.color || cassetteColor(p.name); });
+albums.forEach(a => { a.discLabel = a.discLabel || vinylLabel(a.title); });
+
+const playlistsAlpha = [...playlists].sort((a, b) => a.name.localeCompare(b.name, 'sv'));
+const albumsAlpha    = [...albums].sort((a, b) => a.title.localeCompare(b.title, 'sv'));
+
+function toggleSort() {
+  const mode = sortModes[currentTab];
+  sortModes[currentTab] = mode === 'alpha' ? 'shuffle' : 'alpha';
+  if (currentTab === 'playlist') renderCassetteGrid(currentPlaylistOrder());
+  else renderAlbumGrid(currentAlbumOrder());
+  updateSortBtn();
+}
+
+function currentPlaylistOrder() {
+  return sortModes.playlist === 'alpha' ? playlistsAlpha : fisherYates(playlistsAlpha);
+}
+function currentAlbumOrder() {
+  return sortModes.album === 'alpha' ? albumsAlpha : fisherYates(albumsAlpha);
+}
+
+function updateSortBtn() {
+  const btn = document.getElementById('sortBtn');
+  const mode = sortModes[currentTab];
+  btn.textContent = mode === 'alpha' ? 'A–Z' : '⇄';
+  btn.classList.toggle('is-shuffle', mode === 'shuffle');
+}
+
 /* ── RENDER CASSETTES ── */
 const cassetteGrid = document.getElementById('cassetteGrid');
-playlists.forEach(p => {
-  p.color = cassetteColor(p.name);
-  const wrap = document.createElement('div');
-  wrap.className = 'case-wrap';
-  wrap.innerHTML = `
-    <div class="cassette-case cassette--${p.color}">
-      <div class="case-interior"></div>
-      <div class="case-label-area">${renderLabel(p.name)}</div>
-      <div class="cassette-in-case cassette--${p.color}">
-        <div class="cassette-body">
-          <div class="cassette-window-mini"><div class="reel-mini"></div><div class="reel-mini"></div></div>
+
+function renderCassetteGrid(arr) {
+  cassetteGrid.innerHTML = '';
+  arr.forEach(p => {
+    const wrap = document.createElement('div');
+    wrap.className = 'case-wrap';
+    wrap.innerHTML = `
+      <div class="cassette-case cassette--${p.color}">
+        <div class="case-interior"></div>
+        <div class="case-label-area">${renderLabel(p.name)}</div>
+        <div class="cassette-in-case cassette--${p.color}">
+          <div class="cassette-body">
+            <div class="cassette-window-mini"><div class="reel-mini"></div><div class="reel-mini"></div></div>
+          </div>
         </div>
+        <div class="case-plastic"></div>
       </div>
-      <div class="case-plastic"></div>
-    </div>
-    <div class="case-name">${truncate(p.name, 16)}</div>
-  `;
-  addPressHandlers(wrap);
-  wrap.addEventListener('click', () => openCassette(p));
-  cassetteGrid.appendChild(wrap);
-});
+      <div class="case-name">${truncate(p.name, 16)}</div>
+    `;
+    addPressHandlers(wrap);
+    wrap.addEventListener('click', () => openCassette(p));
+    cassetteGrid.appendChild(wrap);
+  });
+}
 
 /* ── RENDER ALBUMS ── */
 const albumGrid = document.getElementById('albumGrid');
-albums.forEach(a => {
-  a.discLabel = vinylLabel(a.title);
-  const wrap = document.createElement('div');
-  wrap.className = 'album-wrap';
-  wrap.innerHTML = `
-    <div class="vinyl-sleeve">
-      <div class="vinyl-disc ${a.discLabel}"></div>
-      <div class="sleeve-art">
-        <div class="skeleton" style="width:100%;height:100%;position:absolute;inset:0;"></div>
-        <img src="" alt="${a.title}" style="opacity:0;transition:opacity .3s;">
-      </div>
-    </div>
-    <div class="album-name">${truncate(a.title,14)}</div>
-    <div class="album-artist">${truncate(a.artist,14)}</div>
-  `;
-  addPressHandlers(wrap);
-  wrap.addEventListener('click', () => openAlbum(a));
-  albumGrid.appendChild(wrap);
 
-  fetchArt(a.search, 'album').then(url => {
-    if (!url) return;
-    a.artUrl = url;
+function renderAlbumGrid(arr) {
+  albumGrid.innerHTML = '';
+  arr.forEach(a => {
+    const wrap = document.createElement('div');
+    wrap.className = 'album-wrap';
+    wrap.innerHTML = `
+      <div class="vinyl-sleeve">
+        <div class="vinyl-disc ${a.discLabel}"></div>
+        <div class="sleeve-art">
+          <div class="skeleton" style="width:100%;height:100%;position:absolute;inset:0;"></div>
+          <img src="" alt="${a.title}" style="opacity:0;transition:opacity .3s;">
+        </div>
+      </div>
+      <div class="album-name">${truncate(a.title,14)}</div>
+      <div class="album-artist">${truncate(a.artist,14)}</div>
+    `;
+    addPressHandlers(wrap);
+    wrap.addEventListener('click', () => openAlbum(a));
+    albumGrid.appendChild(wrap);
+
     const img = wrap.querySelector('img');
-    const sk = wrap.querySelector('.skeleton');
-    img.onload = () => { sk.style.display='none'; img.style.opacity='1'; };
-    img.src = url;
+    const sk  = wrap.querySelector('.skeleton');
+    if (a.artUrl) {
+      sk.style.display = 'none';
+      img.src = a.artUrl;
+      img.style.opacity = '1';
+    } else {
+      fetchArt(a.search, 'album').then(url => {
+        if (!url) return;
+        a.artUrl = url;
+        img.onload = () => { sk.style.display='none'; img.style.opacity='1'; };
+        img.src = url;
+      });
+    }
   });
-});
+}
 
 /* ── OPEN ALBUM ── */
 function openAlbum(album) {
@@ -640,13 +701,18 @@ function addSwipeToClose(sheet, overlayId) {
 
 /* ── TABS ── */
 function switchTab(tab) {
+  currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('panel-'+tab).classList.add('active');
   document.getElementById('itemCount').textContent = tab==='playlist'
     ? playlists.length+' spellistor' : albums.length+' album';
+  updateSortBtn();
 }
+
+renderCassetteGrid(playlistsAlpha);
+renderAlbumGrid(albumsAlpha);
 switchTab('playlist');
 </script>
 </body>
