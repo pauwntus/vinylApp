@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinyl</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=Permanent+Marker&family=Special+Elite&family=Caveat:wght@400;700&family=Rubik+Mono+One&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0e0c09;
+  --surface: #161410;
+  --text: #e8ddd0;
+  --text-dim: #5a4e40;
+  --accent: #c8a97e;
+  --border: rgba(255,255,255,0.05);
+}
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh; padding: 0 0 80px;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.038'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 999;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,12,9,0.94); backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border); padding: 20px 24px 0;
+}
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--accent); letter-spacing: .04em; font-style: italic; }
+.item-count { font-size: 9px; letter-spacing: .18em; color: var(--text-dim); text-transform: uppercase; }
+.tabs { display: flex; }
+.tab { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); cursor: pointer; padding: 10px 0; margin-right: 28px; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s; }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab:hover:not(.active) { color: var(--text); }
+
+/* ── PANELS ── */
+.panel { display: none; padding: 28px 20px 0; }
+.panel.active { display: block; }
+
+/* ══ CASSETTE GRID ══ */
+.cassette-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px 16px; }
+
+.case-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+.case-wrap:hover .cassette-case { transform: translateY(-7px) rotate(-1.2deg); box-shadow: 0 0 0 1px rgba(255,255,255,.24), 2px 4px 0 1px rgba(0,0,0,.5), 6px 18px 36px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.32); }
+.case-wrap:hover .case-name { color: var(--text); }
+
+.cassette-case { width: 80px; height: 108px; position: relative; border-radius: 3px; transition: transform .28s cubic-bezier(.34,1.4,.64,1), box-shadow .28s ease; box-shadow: 0 0 0 1px rgba(255,255,255,.13), 1px 2px 0 1px rgba(0,0,0,.5), 3px 8px 22px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.24); }
+.case-plastic { position: absolute; inset: 0; border-radius: 3px; background: linear-gradient(135deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.05) 35%, rgba(255,255,255,.02) 65%, rgba(255,255,255,.1) 100%); z-index: 3; pointer-events: none; }
+.case-plastic::before { content: ''; position: absolute; top: 5px; left: 7px; width: 13px; height: 52px; background: linear-gradient(180deg, rgba(255,255,255,.2), transparent); border-radius: 7px; transform: rotate(-6deg); }
+.case-plastic::after { content: ''; position: absolute; bottom: 5px; left: 8px; right: 8px; height: 2px; background: rgba(255,255,255,.09); border-radius: 2px; }
+.case-interior { position: absolute; inset: 2px; border-radius: 2px; z-index: 1; overflow: hidden; }
+.case-label-area { position: absolute; top: 5px; left: 5px; right: 5px; height: 52px; border-radius: 2px; z-index: 2; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.cassette-in-case { position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%); width: 66px; height: 42px; border-radius: 4px; z-index: 2; }
+.cassette-body { width: 100%; height: 100%; border-radius: 4px; position: relative; box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 2px 6px rgba(0,0,0,.6); }
+.cassette-window-mini { position: absolute; top: 7px; left: 50%; transform: translateX(-50%); width: 32px; height: 16px; background: rgba(0,0,0,.82); border-radius: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,.9); display: flex; align-items: center; justify-content: center; gap: 4px; }
+.reel-mini { width: 8px; height: 8px; border-radius: 50%; background: radial-gradient(circle at 38% 35%, #555, #1a1a1a); flex-shrink: 0; border: 1px dashed rgba(255,255,255,.08); }
+
+.cassette--black   .cassette-body,.cassette--black   .case-interior { background: linear-gradient(150deg,#262626,#0e0e0e); }
+.cassette--white   .cassette-body,.cassette--white   .case-interior { background: linear-gradient(150deg,#ddd8d2,#c0bcb8); }
+.cassette--cream   .cassette-body,.cassette--cream   .case-interior { background: linear-gradient(150deg,#c4b894,#a89e80); }
+.cassette--chrome  .cassette-body,.cassette--chrome  .case-interior { background: linear-gradient(150deg,#788898,#485868); }
+.cassette--teal    .cassette-body,.cassette--teal    .case-interior { background: linear-gradient(150deg,#164848,#0a2828); }
+.cassette--oxblood .cassette-body,.cassette--oxblood .case-interior { background: linear-gradient(150deg,#501414,#300808); }
+.cassette--navy    .cassette-body,.cassette--navy    .case-interior { background: linear-gradient(150deg,#141438,#0a0a22); }
+.cassette--olive   .cassette-body,.cassette--olive   .case-interior { background: linear-gradient(150deg,#303010,#1e1e08); }
+.cassette--burgundy .cassette-body,.cassette--burgundy .case-interior { background: linear-gradient(150deg,#420e28,#260614); }
+.cassette--forest  .cassette-body,.cassette--forest  .case-interior { background: linear-gradient(150deg,#142814,#0a180a); }
+.cassette--slate   .cassette-body,.cassette--slate   .case-interior { background: linear-gradient(150deg,#303848,#1c242e); }
+.cassette--rust    .cassette-body,.cassette--rust    .case-interior { background: linear-gradient(150deg,#5a2010,#361408); }
+
+/* Label styles */
+.label-dymo       { background:#eeeae0; font-family:'Rubik Mono One',monospace; font-size:6.5px; letter-spacing:.04em; color:#111; text-transform:uppercase; width:100%; height:100%; display:flex; align-items:center; justify-content:center; text-align:center; padding:3px; line-height:1.3; word-break:break-word; }
+.label-dymo-sm    { background:#eeeae0; font-family:'Rubik Mono One',monospace; font-size:5.5px; letter-spacing:.02em; color:#111; text-transform:uppercase; width:100%; height:100%; display:flex; align-items:center; justify-content:center; text-align:center; padding:3px; line-height:1.3; word-break:break-word; }
+.label-tape       { background:rgba(232,216,148,.92); font-family:'Caveat',cursive; font-size:11px; font-weight:700; color:#281808; text-align:center; padding:3px 4px; width:88%; transform:rotate(-2deg); box-shadow:1px 1px 4px rgba(0,0,0,.28); border-top:1px solid rgba(190,165,70,.5); border-bottom:1px solid rgba(190,165,70,.5); word-break:break-word; line-height:1.2; }
+.label-tape-sm    { background:rgba(232,216,148,.92); font-family:'Caveat',cursive; font-size:9px; font-weight:700; color:#281808; text-align:center; padding:2px 4px; width:88%; transform:rotate(-1.5deg); box-shadow:1px 1px 4px rgba(0,0,0,.28); border-top:1px solid rgba(190,165,70,.5); border-bottom:1px solid rgba(190,165,70,.5); word-break:break-word; line-height:1.2; }
+.label-sharpie    { font-family:'Permanent Marker',cursive; font-size:11px; text-align:center; padding:4px; width:100%; word-break:break-word; line-height:1.2; }
+.label-sharpie-sm { font-family:'Permanent Marker',cursive; font-size:8.5px; text-align:center; padding:4px; width:100%; word-break:break-word; line-height:1.15; }
+.label-typewriter { background:#f3ede4; font-family:'Special Elite',monospace; font-size:7px; letter-spacing:.02em; color:#241e14; text-align:center; padding:4px; width:100%; height:100%; display:flex; align-items:center; justify-content:center; word-break:break-word; line-height:1.4; }
+
+/* Sharpie ink color by cassette */
+.cassette--black .label-sharpie,.cassette--navy .label-sharpie,.cassette--teal .label-sharpie,
+.cassette--oxblood .label-sharpie,.cassette--burgundy .label-sharpie,.cassette--forest .label-sharpie,
+.cassette--olive .label-sharpie,.cassette--slate .label-sharpie,.cassette--rust .label-sharpie,
+.cassette--black .label-sharpie-sm,.cassette--navy .label-sharpie-sm,.cassette--teal .label-sharpie-sm,
+.cassette--oxblood .label-sharpie-sm,.cassette--burgundy .label-sharpie-sm,.cassette--forest .label-sharpie-sm,
+.cassette--olive .label-sharpie-sm,.cassette--slate .label-sharpie-sm,.cassette--rust .label-sharpie-sm
+{ color:rgba(255,255,255,.82); }
+.cassette--white .label-sharpie,.cassette--cream .label-sharpie,.cassette--chrome .label-sharpie,
+.cassette--white .label-sharpie-sm,.cassette--cream .label-sharpie-sm,.cassette--chrome .label-sharpie-sm
+{ color:rgba(15,8,3,.82); }
+
+.case-name { font-size:9px; letter-spacing:.07em; color:var(--text-dim); text-align:center; text-transform:uppercase; max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .2s; }
+
+/* ══ ALBUM GRID ══ */
+.album-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 16px; }
+.album-wrap { display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; }
+.album-wrap:hover .vinyl-sleeve { transform: translateY(-6px) rotate(1deg); }
+.album-wrap:hover .vinyl-disc { right: -22px; }
+.album-wrap:hover .album-name { color: var(--text); }
+
+.vinyl-sleeve { width: 90px; height: 90px; position: relative; border-radius: 2px; transition: transform .28s cubic-bezier(.34,1.3,.64,1); }
+.sleeve-art { width:100%; height:100%; border-radius:2px; position:relative; overflow:hidden; box-shadow: -3px 0 0 rgba(0,0,0,.5), 0 4px 16px rgba(0,0,0,.8), inset 0 0 0 1px rgba(255,255,255,.07); background:#1a1a1a; }
+.sleeve-art img { width:100%; height:100%; object-fit:cover; display:block; }
+.vinyl-disc { position:absolute; right:-10px; top:50%; transform:translateY(-50%); width:76px; height:76px; border-radius:50%; z-index:-1; transition:right .28s cubic-bezier(.34,1.3,.64,1); background: radial-gradient(circle at 50% 50%, #2a2a2a 0%, #2a2a2a 9%, transparent 9%), repeating-radial-gradient(circle at 50% 50%, #191919 0px, #212121 1px, #191919 2px, #222 3px, #1c1c1c 4px, #212121 5px); box-shadow: 0 2px 12px rgba(0,0,0,.8), inset 0 0 0 1px rgba(255,255,255,.03); }
+.vinyl-disc::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:20px; height:20px; border-radius:50%; }
+.label-red::after    { background:radial-gradient(circle,#c0392b,#922b21); }
+.label-blue::after   { background:radial-gradient(circle,#2471a3,#1a5276); }
+.label-yellow::after { background:radial-gradient(circle,#d4ac0d,#9a7d0a); }
+.label-green::after  { background:radial-gradient(circle,#1e8449,#145a32); }
+.label-purple::after { background:radial-gradient(circle,#7d3c98,#6c3483); }
+.label-orange::after { background:radial-gradient(circle,#ca6f1e,#935116); }
+.label-white::after  { background:radial-gradient(circle,#d5d8dc,#aab7b8); }
+.label-cream::after  { background:radial-gradient(circle,#d4c8a8,#b8aa88); }
+.album-name { font-size:9px; letter-spacing:.06em; color:var(--text-dim); text-align:center; text-transform:uppercase; max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .2s; }
+.album-artist { font-size:8px; color:var(--text-dim); text-align:center; opacity:.55; max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:-4px; }
+
+.skeleton { background:linear-gradient(90deg,#1a1810 25%,#242018 50%,#1a1810 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ══ OVERLAY BASE ══ */
+.overlay { position:fixed; inset:0; z-index:500; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity .35s ease; }
+.overlay.open { opacity:1; pointer-events:all; }
+.overlay-backdrop { position:absolute; inset:0; background:rgba(5,4,3,.82); backdrop-filter:blur(20px); }
+
+/* ══ ALBUM SHEET ══ */
+.album-sheet {
+  position:relative; z-index:1; width:100%;
+  background:var(--surface); border-radius:20px 20px 0 0;
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:0 0 48px;
+  transform:translateY(100%); transition:transform .4s cubic-bezier(.32,1,.28,1);
+  max-height:88vh; overflow-y:auto;
+}
+.overlay.open .album-sheet { transform:translateY(0); }
+.sheet-handle { width:36px; height:4px; border-radius:2px; background:rgba(255,255,255,.12); margin:12px auto 0; }
+
+.album-hero { position:relative; height:220px; overflow:hidden; }
+.album-hero-bg { position:absolute; inset:-20px; background-size:cover; background-position:center; filter:blur(30px) brightness(0.35) saturate(1.5); transform:scale(1.1); }
+.album-hero-content { position:relative; z-index:1; display:flex; align-items:flex-end; gap:20px; padding:0 24px 24px; height:100%; }
+
+.hero-sleeve-wrap { position:relative; width:130px; height:130px; flex-shrink:0; }
+.hero-sleeve { width:130px; height:130px; border-radius:3px; overflow:hidden; box-shadow:-4px 0 0 rgba(0,0,0,.6), 0 8px 32px rgba(0,0,0,.9), inset 0 0 0 1px rgba(255,255,255,.08); position:relative; z-index:2; background:#111; }
+.hero-sleeve img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero-vinyl { position:absolute; top:50%; right:-10px; transform:translateY(-50%); width:114px; height:114px; border-radius:50%; z-index:1; background: radial-gradient(circle at 50% 50%, #2a2a2a 0%, #2a2a2a 9%, transparent 9%), repeating-radial-gradient(circle at 50% 50%, #181818 0px, #222 1px, #191919 2px, #232323 3px, #1c1c1c 4px, #222222 5px); box-shadow:0 4px 24px rgba(0,0,0,.9); transition:right .6s cubic-bezier(.34,1.1,.64,1); }
+.hero-vinyl::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:28px; height:28px; border-radius:50%; }
+.overlay.open .hero-vinyl { right:-54px; }
+
+.hero-info { flex:1; min-width:0; padding-bottom:2px; }
+.hero-artist { font-size:10px; letter-spacing:.18em; color:var(--accent); text-transform:uppercase; margin-bottom:6px; }
+.hero-title { font-family:'Playfair Display',serif; font-size:20px; line-height:1.15; color:var(--text); margin-bottom:4px; }
+.hero-year { font-size:10px; color:var(--text-dim); letter-spacing:.06em; }
+
+.tracklist { padding:8px 20px 0; }
+.track-row { display:flex; align-items:center; gap:14px; padding:11px 6px; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer; transition:background .15s; border-radius:6px; }
+.track-row:hover { background:rgba(255,255,255,.03); }
+.track-num { width:20px; text-align:right; font-size:10px; color:var(--text-dim); opacity:.45; flex-shrink:0; }
+.track-name { flex:1; font-size:12px; color:var(--text-dim); transition:color .15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.track-row:hover .track-name { color:var(--text); }
+.track-dur { font-size:10px; color:var(--text-dim); opacity:.4; flex-shrink:0; }
+
+.action-row { display:flex; gap:10px; padding:20px 20px 0; }
+.play-btn { display:flex; align-items:center; gap:8px; background:none; border:1px solid rgba(200,169,126,.25); color:var(--accent); padding:10px 20px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; border-radius:2px; transition:all .2s; }
+.play-btn:hover { background:rgba(200,169,126,.08); border-color:var(--accent); }
+.shuffle-btn { display:flex; align-items:center; gap:8px; background:none; border:1px solid rgba(255,255,255,.08); color:var(--text-dim); padding:10px 16px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.15em; text-transform:uppercase; cursor:pointer; border-radius:2px; transition:all .2s; }
+.shuffle-btn:hover { border-color:rgba(255,255,255,.2); color:var(--text); }
+
+/* ══ CASSETTE SHEET ══ */
+.cassette-sheet {
+  position:relative; z-index:1; width:100%;
+  background:var(--surface); border-radius:20px 20px 0 0;
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:0 0 48px;
+  transform:translateY(100%); transition:transform .4s cubic-bezier(.32,1,.28,1);
+  max-height:90vh; overflow-y:auto;
+}
+.overlay.open .cassette-sheet { transform:translateY(0); }
+
+/* Cassette hero — full width atmospheric bg */
+.cassette-hero-bg {
+  position:absolute; inset:0; z-index:0;
+  opacity:0; transition:opacity .5s .2s;
+}
+.cassette-hero-bg.loaded { opacity:1; }
+.cassette-hero-bg-img {
+  position:absolute; inset:-20px;
+  background-size:cover; background-position:center;
+  filter:blur(40px) brightness(0.2) saturate(1.2);
+  transform:scale(1.1);
+}
+
+.cassette-hero {
+  position:relative; z-index:1;
+  padding:28px 24px 24px;
+  display:flex; gap:22px; align-items:center;
+}
+
+/* The opening case */
+.case-opening-wrap { position:relative; width:100px; height:134px; flex-shrink:0; perspective:500px; }
+
+.full-case { width:100px; height:134px; position:absolute; border-radius:4px; box-shadow: 0 0 0 1px rgba(255,255,255,.16), 2px 4px 0 1px rgba(0,0,0,.5), 4px 12px 32px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.26); }
+.full-case-plastic { position:absolute; inset:0; border-radius:4px; z-index:5; pointer-events:none; background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.04) 40%,rgba(255,255,255,.02) 70%,rgba(255,255,255,.09) 100%); }
+.full-case-plastic::before { content:''; position:absolute; top:6px; left:8px; width:16px; height:70px; background:linear-gradient(180deg,rgba(255,255,255,.18),transparent); border-radius:8px; transform:rotate(-6deg); }
+.full-case-interior { position:absolute; inset:3px; border-radius:3px; z-index:1; overflow:hidden; }
+
+.case-lid { position:absolute; top:0; left:0; right:0; height:68px; transform-origin:top center; transform:rotateX(0deg); transition:transform .75s cubic-bezier(.4,.2,.2,1); z-index:4; border-radius:4px 4px 0 0; }
+.overlay.open .case-lid { transform:rotateX(-148deg); }
+.lid-face { width:100%; height:100%; border-radius:4px 4px 0 0; overflow:hidden; box-shadow:inset 0 -1px 0 rgba(0,0,0,.3); position:relative; }
+.lid-plastic { position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.04) 50%,transparent 100%); z-index:2; pointer-events:none; }
+.lid-label-area { position:absolute; top:6px; left:6px; right:6px; height:56px; border-radius:2px; z-index:1; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+
+.case-cassette { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:84px; height:54px; border-radius:4px; z-index:2; }
+.case-cassette .cassette-body { border-radius:4px; box-shadow:0 1px 0 rgba(255,255,255,.07) inset, 0 2px 8px rgba(0,0,0,.7); }
+.cassette-window-full { position:absolute; top:10px; left:50%; transform:translateX(-50%); width:40px; height:20px; background:rgba(0,0,0,.85); border-radius:3px; box-shadow:inset 0 1px 3px rgba(0,0,0,.9); display:flex; align-items:center; justify-content:center; gap:5px; }
+.reel-full { width:11px; height:11px; border-radius:50%; background:radial-gradient(circle at 38% 35%,#555,#1a1a1a); flex-shrink:0; box-shadow:inset 0 1px 1px rgba(255,255,255,.08); position:relative; }
+.reel-full::after { content:''; position:absolute; inset:2px; border-radius:50%; border:1.5px dashed rgba(255,255,255,.1); }
+
+/* cassette info */
+.cassette-info { flex:1; min-width:0; }
+.cassette-playlist-name { font-family:'Playfair Display',serif; font-size:19px; color:var(--text); line-height:1.2; margin-bottom:6px; }
+.cassette-meta { font-size:10px; color:var(--text-dim); letter-spacing:.08em; }
+
+/* tape sides A/B */
+.tape-sides { display:flex; gap:0; padding:0 20px; margin-top:20px; border-bottom:1px solid var(--border); }
+.tape-side-tab { font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-dim); padding:8px 0; margin-right:24px; border-bottom:2px solid transparent; cursor:pointer; transition:all .15s; }
+.tape-side-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+/* track rows */
+.cassette-tracklist { padding:4px 16px 0; }
+.cassette-track-row { display:flex; align-items:center; gap:12px; padding:10px 6px; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer; border-radius:6px; transition:background .15s; }
+.cassette-track-row:hover { background:rgba(255,255,255,.03); }
+.cassette-track-num { width:18px; text-align:right; font-size:10px; color:var(--text-dim); opacity:.4; flex-shrink:0; }
+.cassette-track-art { width:36px; height:36px; border-radius:3px; overflow:hidden; flex-shrink:0; background:#1a1a1a; }
+.cassette-track-art img { width:100%; height:100%; object-fit:cover; display:block; }
+.cassette-track-info { flex:1; min-width:0; }
+.cassette-track-name { font-size:11px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .15s; }
+.cassette-track-row:hover .cassette-track-name { color:var(--text); }
+.cassette-track-artist { font-size:9px; color:var(--text-dim); opacity:.45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+.cassette-track-dur { font-size:10px; color:var(--text-dim); opacity:.35; flex-shrink:0; }
+
+.close-pill { position:absolute; top:16px; right:20px; z-index:10; background:rgba(255,255,255,.07); border:none; color:var(--text-dim); width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.close-pill:hover { background:rgba(255,255,255,.12); color:var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">Vinyl</div>
+    <div class="item-count" id="itemCount"></div>
+  </div>
+  <div class="tabs">
+    <div class="tab" id="tab-album" onclick="switchTab('album')">Album</div>
+    <div class="tab active" id="tab-playlist" onclick="switchTab('playlist')">Spellistor</div>
+  </div>
+</header>
+
+<div class="panel active" id="panel-playlist">
+  <div class="cassette-grid" id="cassetteGrid"></div>
+</div>
+<div class="panel" id="panel-album">
+  <div class="album-grid" id="albumGrid"></div>
+</div>
+
+<!-- ALBUM OVERLAY -->
+<div class="overlay" id="albumOverlay">
+  <div class="overlay-backdrop" id="albumBackdrop"></div>
+  <div class="album-sheet">
+    <button class="close-pill" onclick="closeOverlay('albumOverlay')">×</button>
+    <div class="sheet-handle"></div>
+    <div class="album-hero">
+      <div class="album-hero-bg" id="heroBg"></div>
+      <div class="album-hero-content">
+        <div class="hero-sleeve-wrap">
+          <div class="hero-sleeve"><img id="heroImg" src="" alt=""></div>
+          <div class="hero-vinyl" id="heroVinyl"></div>
+        </div>
+        <div class="hero-info">
+          <div class="hero-artist" id="heroArtist"></div>
+          <div class="hero-title" id="heroTitle"></div>
+          <div class="hero-year" id="heroYear"></div>
+        </div>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="play-btn">▶ Spela</button>
+      <button class="shuffle-btn">⇄ Blanda</button>
+    </div>
+    <div class="tracklist" id="albumTracklist"></div>
+  </div>
+</div>
+
+<!-- CASSETTE OVERLAY -->
+<div class="overlay" id="cassetteOverlay">
+  <div class="overlay-backdrop"></div>
+  <div class="cassette-sheet">
+    <button class="close-pill" onclick="closeOverlay('cassetteOverlay')">×</button>
+    <div class="sheet-handle"></div>
+    <div style="position:relative;">
+      <div class="cassette-hero-bg" id="cassetteHeroBg">
+        <div class="cassette-hero-bg-img" id="cassetteHeroBgImg"></div>
+      </div>
+      <div class="cassette-hero">
+        <div class="case-opening-wrap" id="caseOpeningWrap"></div>
+        <div class="cassette-info">
+          <div class="cassette-playlist-name" id="cassetteTitle"></div>
+          <div class="cassette-meta" id="cassetteMeta"></div>
+          <div class="action-row" style="padding:16px 0 0;">
+            <button class="play-btn">▶ Spela</button>
+            <button class="shuffle-btn">⇄ Blanda</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tape-sides" id="tapeSides"></div>
+    <div class="cassette-tracklist" id="cassetteTracklist"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════
+   SMART LABEL + COLOR LOGIC
+══════════════════════════ */
+const COLORS = ['black','navy','teal','oxblood','burgundy','forest','olive','slate','rust','chrome','cream','white'];
+const VINYL_LABELS = ['label-red','label-blue','label-yellow','label-green','label-purple','label-orange','label-white','label-cream'];
+
+function hashStr(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function cassetteColor(name) {
+  return COLORS[hashStr(name) % COLORS.length];
+}
+
+function vinylLabel(title) {
+  return VINYL_LABELS[hashStr(title) % VINYL_LABELS.length];
+}
+
+// Truncate at word boundary
+function truncate(str, max) {
+  if (str.length <= max) return str;
+  const cut = str.substring(0, max);
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > 0 ? cut.substring(0, lastSpace) : cut) + '…';
+}
+
+function labelStyle(name) {
+  const n = name.length;
+  if (n <= 10) return { cls: 'label-dymo',       display: name };
+  if (n <= 16) return { cls: 'label-tape',        display: name };
+  if (n <= 24) return { cls: 'label-sharpie',     display: truncate(name, 22) };
+  return            { cls: 'label-sharpie-sm',    display: truncate(name, 28) };
+}
+
+function renderLabel(name) {
+  const { cls, display } = labelStyle(name);
+  return `<div class="${cls}">${display}</div>`;
+}
+
+/* ── DATA ── */
+const playlists = [
+  { name:'Sommar 2019',                              tracks:['As It Was','Blinding Lights','Heat Waves','Levitating','Peaches','Stay','Bad Habits'] },
+  { name:'Driving',                                  tracks:['Mr. Brightside','Reptilia','Last Nite','Take Me Out','Float On','The Less I Know The Better'] },
+  { name:'Late Night',                               tracks:['Midnight City','Digital Love','Get Lucky','Around the World','One More Time','Within'] },
+  { name:'Gym',                                      tracks:['POWER','Stronger','Till I Collapse','Lose Yourself','Can\'t Hold Us','Sicko Mode'] },
+  { name:'Chill Mix',                                tracks:['Electric Feel','Dog Days Are Over','Little Lion Man','The Cave','Shake It Out'] },
+  { name:'Sommarkväll vid Havet',                    tracks:['Island in the Sun','Here Comes the Sun','Banana Pancakes','Good as Hell','Somewhere Only We Know'] },
+  { name:'Favorites',                                tracks:['Bohemian Rhapsody','Hotel California','Stairway to Heaven','Black','Comfortably Numb'] },
+  { name:'Focus',                                    tracks:['Comptine d\'un autre été','Nuvole Bianche','River Flows in You','Gymnopédie No.1','Clair de Lune'] },
+  { name:'Bästa låtarna från förra sommaren mix',    tracks:['Uptown Funk','Happy','Can\'t Stop the Feeling','Shut Up and Dance','24K Magic','Blurred Lines'] },
+];
+
+const albums = [
+  { title:'Kind of Blue',     artist:'Miles Davis',     search:'Miles Davis Kind of Blue',    year:1959, tracks:['So What','Freddie Freeloader','Blue in Green','All Blues','Flamenco Sketches'] },
+  { title:'Rumours',          artist:'Fleetwood Mac',   search:'Fleetwood Mac Rumours',        year:1977, tracks:['Second Hand News','Dreams','The Chain','Go Your Own Way','Gold Dust Woman'] },
+  { title:'OK Computer',      artist:'Radiohead',       search:'Radiohead OK Computer',        year:1997, tracks:['Airbag','Paranoid Android','Subterranean Homesick Alien','Exit Music','Karma Police','Let Down','Climbing Up the Walls','No Surprises'] },
+  { title:'Abbey Road',       artist:'The Beatles',     search:'Beatles Abbey Road',           year:1969, tracks:['Come Together','Something','Maxwell\'s Silver Hammer','Here Comes the Sun','Because','The End'] },
+  { title:'Purple Rain',      artist:'Prince',          search:'Prince Purple Rain',           year:1984, tracks:['Let\'s Go Crazy','Take Me with U','The Beautiful Ones','When Doves Cry','Purple Rain'] },
+  { title:'Nevermind',        artist:'Nirvana',         search:'Nirvana Nevermind',            year:1991, tracks:['Smells Like Teen Spirit','In Bloom','Come as You Are','Lithium','Polly','Territorial Pissings','Drain You'] },
+  { title:'Thriller',         artist:'Michael Jackson', search:'Michael Jackson Thriller',     year:1982, tracks:['Thriller','Beat It','Billie Jean','Wanna Be Startin\' Somethin\'','Human Nature','PYT'] },
+  { title:'Blue',             artist:'Joni Mitchell',   search:'Joni Mitchell Blue album',     year:1971, tracks:['All I Want','California','Blue','A Case of You','River','The Last Time I Saw Richard'] },
+  { title:'Graceland',        artist:'Paul Simon',      search:'Paul Simon Graceland',         year:1986, tracks:['The Boy in the Bubble','Graceland','You Can Call Me Al','Under African Skies','Diamonds on the Soles of Her Shoes'] },
+];
+
+/* ── iTunes art fetch ── */
+const artCache = {};
+async function fetchArt(query, entity='album') {
+  const key = entity+':'+query;
+  if (artCache[key]) return artCache[key];
+  try {
+    const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=${entity}&limit=1`);
+    const data = await res.json();
+    const url = data.results[0]?.artworkUrl100?.replace('100x100bb','600x600bb') || '';
+    artCache[key] = url;
+    return url;
+  } catch { return ''; }
+}
+
+/* ── RENDER CASSETTES ── */
+const cassetteGrid = document.getElementById('cassetteGrid');
+playlists.forEach(p => {
+  p.color = cassetteColor(p.name);
+  const wrap = document.createElement('div');
+  wrap.className = 'case-wrap';
+  wrap.innerHTML = `
+    <div class="cassette-case cassette--${p.color}">
+      <div class="case-interior"></div>
+      <div class="case-label-area">${renderLabel(p.name)}</div>
+      <div class="cassette-in-case cassette--${p.color}">
+        <div class="cassette-body">
+          <div class="cassette-window-mini"><div class="reel-mini"></div><div class="reel-mini"></div></div>
+        </div>
+      </div>
+      <div class="case-plastic"></div>
+    </div>
+    <div class="case-name">${truncate(p.name, 16)}</div>
+  `;
+  wrap.addEventListener('click', () => openCassette(p));
+  cassetteGrid.appendChild(wrap);
+});
+
+/* ── RENDER ALBUMS ── */
+const albumGrid = document.getElementById('albumGrid');
+albums.forEach(a => {
+  a.discLabel = vinylLabel(a.title);
+  const wrap = document.createElement('div');
+  wrap.className = 'album-wrap';
+  wrap.innerHTML = `
+    <div class="vinyl-sleeve">
+      <div class="vinyl-disc ${a.discLabel}"></div>
+      <div class="sleeve-art">
+        <div class="skeleton" style="width:100%;height:100%;position:absolute;inset:0;"></div>
+        <img src="" alt="${a.title}" style="opacity:0;transition:opacity .3s;">
+      </div>
+    </div>
+    <div class="album-name">${truncate(a.title,14)}</div>
+    <div class="album-artist">${truncate(a.artist,14)}</div>
+  `;
+  wrap.addEventListener('click', () => openAlbum(a));
+  albumGrid.appendChild(wrap);
+
+  fetchArt(a.search, 'album').then(url => {
+    if (!url) return;
+    a.artUrl = url;
+    const img = wrap.querySelector('img');
+    const sk = wrap.querySelector('.skeleton');
+    img.onload = () => { sk.style.display='none'; img.style.opacity='1'; };
+    img.src = url;
+  });
+});
+
+/* ── OPEN ALBUM ── */
+function openAlbum(album) {
+  document.getElementById('heroImg').src = album.artUrl || '';
+  document.getElementById('heroBg').style.backgroundImage = `url(${album.artUrl||''})`;
+  document.getElementById('heroArtist').textContent = album.artist;
+  document.getElementById('heroTitle').textContent = album.title;
+  document.getElementById('heroYear').textContent = album.year + ' · ' + album.tracks.length + ' låtar';
+  const vinyl = document.getElementById('heroVinyl');
+  vinyl.className = 'hero-vinyl ' + album.discLabel;
+
+  const tl = document.getElementById('albumTracklist');
+  tl.innerHTML = '';
+  album.tracks.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'track-row';
+    row.innerHTML = `<span class="track-num">${String(i+1).padStart(2,'0')}</span><span class="track-name">${t}</span><span class="track-dur">—</span>`;
+    tl.appendChild(row);
+  });
+  openOverlay('albumOverlay');
+}
+
+/* ── OPEN CASSETTE ── */
+async function openCassette(playlist) {
+  document.getElementById('cassetteTitle').textContent = playlist.name;
+  document.getElementById('cassetteMeta').textContent = playlist.tracks.length + ' låtar';
+
+  // Build case
+  const wrap = document.getElementById('caseOpeningWrap');
+  wrap.innerHTML = `
+    <div class="full-case cassette--${playlist.color}">
+      <div class="full-case-interior"></div>
+      <div class="case-cassette cassette--${playlist.color}">
+        <div class="cassette-body">
+          <div class="cassette-window-full"><div class="reel-full"></div><div class="reel-full"></div></div>
+        </div>
+      </div>
+      <div class="case-lid cassette--${playlist.color}">
+        <div class="lid-face">
+          <div class="lid-plastic"></div>
+          <div class="lid-label-area">${renderLabel(playlist.name)}</div>
+        </div>
+      </div>
+      <div class="full-case-plastic"></div>
+    </div>
+  `;
+
+  // Tape sides A/B
+  const half = Math.ceil(playlist.tracks.length / 2);
+  const sides = [
+    { label: 'Sida A', tracks: playlist.tracks.slice(0, half) },
+    { label: 'Sida B', tracks: playlist.tracks.slice(half) },
+  ];
+  let activeSide = 0;
+
+  const tapeSides = document.getElementById('tapeSides');
+  tapeSides.innerHTML = sides.map((s,i) => `<div class="tape-side-tab ${i===0?'active':''}" data-side="${i}">${s.label} · ${s.tracks.length} låtar</div>`).join('');
+  tapeSides.querySelectorAll('.tape-side-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      activeSide = parseInt(tab.dataset.side);
+      tapeSides.querySelectorAll('.tape-side-tab').forEach(t => t.classList.toggle('active', t===tab));
+      renderCassetteTracks(sides[activeSide].tracks, playlist.name);
+    });
+  });
+
+  renderCassetteTracks(sides[0].tracks, playlist.name);
+
+  // Ambient background from first track art
+  const bgDiv = document.getElementById('cassetteHeroBg');
+  const bgImg = document.getElementById('cassetteHeroBgImg');
+  bgDiv.classList.remove('loaded');
+  fetchArt(playlist.tracks[0] + ' ' + playlist.name, 'song').then(url => {
+    if (url) {
+      bgImg.style.backgroundImage = `url(${url})`;
+      bgDiv.classList.add('loaded');
+    }
+  });
+
+  openOverlay('cassetteOverlay');
+}
+
+function renderCassetteTracks(tracks, playlistName) {
+  const tl = document.getElementById('cassetteTracklist');
+  tl.innerHTML = '';
+  tracks.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'cassette-track-row';
+    row.innerHTML = `
+      <span class="cassette-track-num">${String(i+1).padStart(2,'0')}</span>
+      <div class="cassette-track-art skeleton"></div>
+      <div class="cassette-track-info">
+        <div class="cassette-track-name">${t}</div>
+        <div class="cassette-track-artist">—</div>
+      </div>
+      <span class="cassette-track-dur">—</span>
+    `;
+    tl.appendChild(row);
+    fetchArt(t, 'song').then(url => {
+      if (!url) return;
+      const art = row.querySelector('.cassette-track-art');
+      art.classList.remove('skeleton');
+      art.innerHTML = `<img src="${url}" alt="${t}">`;
+      const artistEl = row.querySelector('.cassette-track-artist');
+      // fetch artist name
+      fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(t)}&media=music&entity=song&limit=1`)
+        .then(r=>r.json()).then(d => {
+          if (d.results[0]?.artistName) artistEl.textContent = d.results[0].artistName;
+        }).catch(()=>{});
+    });
+  });
+}
+
+/* ── OVERLAY HELPERS ── */
+function openOverlay(id) {
+  const el = document.getElementById(id);
+  el.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  el.querySelector('.overlay-backdrop').onclick = () => closeOverlay(id);
+}
+function closeOverlay(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeOverlay('albumOverlay'); closeOverlay('cassetteOverlay'); }
+});
+
+/* ── TABS ── */
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.getElementById('itemCount').textContent = tab==='playlist'
+    ? playlists.length+' spellistor' : albums.length+' album';
+}
+switchTab('playlist');
+</script>
+</body>
+</html>
